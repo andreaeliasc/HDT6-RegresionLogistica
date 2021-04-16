@@ -104,3 +104,42 @@ modelo2
 
 modelo3<-glm(datos3~., data = train[,c(2:10,14)],family = binomial(), maxit=100)
 modelo3
+
+#Graficas
+#Casas Caras
+ggplot(data = train[,c("GrLivArea","datos1")], aes(x = GrLivArea, y = datos1)) +
+  geom_point(aes(color = as.factor(datos1)), shape = 1) + 
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"),
+              color = "pink",
+              se = FALSE) +
+  theme_bw() +
+  labs(title = "Regresion logistica: Casas Caras",
+       y = "Probabilidad default") +
+  theme(legend.position = "none")
+
+#Casas Intermedias
+
+ggplot(data = train[,c("GrLivArea","datos2")], aes(x = GrLivArea, y = datos2)) +
+  geom_point(aes(color = as.factor(datos2)), shape = 1) + 
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"),
+              color = "pink",
+              se = FALSE) +
+  theme_bw() +
+  labs(title = "Regresion logistica: Casas Intermedias",
+       y = "Probabilidad default") +
+  theme(legend.position = "none")
+
+#Casas Economicas
+
+ggplot(data = train[,c("GrLivArea","datos3")], aes(x = GrLivArea, y = datos3)) +
+  geom_point(aes(color = as.factor(datos3)), shape = 1) + 
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"),
+              color = "pink",
+              se = FALSE) +
+  theme_bw() +
+  labs(title = "Regresion logistica: Casas Economicas",
+       y = "Probabilidad default") +
+  theme(legend.position = "none")
