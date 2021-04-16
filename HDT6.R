@@ -81,3 +81,26 @@ datos <- datos[,c("LotFrontage","LotArea","GrLivArea","YearBuilt","BsmtUnfSF","T
 datos <- na.omit(datos)
 
 head(datos, 30)
+
+
+porcentaje<-0.7
+corte <- sample(nrow(datos),nrow(datos)*porcentaje)
+train<-datos[corte,]
+test<-datos[-corte,]
+
+head(train)
+
+
+head(test)
+
+
+#Modelo de regresion logistica
+#CasasCaras
+modelo<-glm(datos1~., data = train[,c(2:10,12)],family = binomial(), maxit=100)
+modelo
+
+modelo2<-glm(datos2~., data = train[,c(2:10,13)],family = binomial(), maxit=100)
+modelo2
+
+modelo3<-glm(datos3~., data = train[,c(2:10,14)],family = binomial(), maxit=100)
+modelo3
