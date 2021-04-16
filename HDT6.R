@@ -21,6 +21,7 @@ library(NbClust)
 library(factoextra)
 library(rpart)
 library(corrplot)
+library(dummies)
 
 # Analisis Exploratorio
 train<- read.csv("train.csv", stringsAsFactors = FALSE)
