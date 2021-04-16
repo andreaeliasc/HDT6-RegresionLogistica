@@ -143,3 +143,93 @@ ggplot(data = train[,c("GrLivArea","datos3")], aes(x = GrLivArea, y = datos3)) +
   labs(title = "Regresion logistica: Casas Economicas",
        y = "Probabilidad default") +
   theme(legend.position = "none")
+
+
+
+# Determinaci?n de la colinealidad de las variables
+#casas Caras
+matriz_cor <- cor(datos[,c(1:10,12)])
+matriz_cor
+corrplot(matriz_cor)
+
+confusionMatrix(as.factor(prediccion),as.factor(test$datos1))
+
+#casas Intermedias
+matriz_cor1 <- cor(datos2[,c(1:10,13)])
+matriz_cor1
+corrplot(matriz_cor1)
+
+#casas Economicas
+matriz_cor2 <- cor(datos3[,c(1:10,14)])
+matriz_cor2
+corrplot(matriz_cor2)
+
+
+pred<-predict(modelo,newdata = test[,1:14], type = "response")
+prediccion<-ifelse(pred>=0.8,1,0)
+
+
+
+
+# Cantidad de predicciones falladas
+test[which(test[,12]!=test[,14]),]
+
+count(test[which(test[,12]!=test[,14]),])
+
+# Se elimna la columna extra de prediccion para trabajar con estos datos nuevamente
+test[,15]<- NULL
+
+# Matriz de confusion para el modelo de regresion logistica 
+confusionMatrix(as.factor(prediccion),as.factor(test$datos1))
+
+confusionMatrix(as.factor(prediccion),as.factor(test$datos2))
+
+
+confusionMatrix(as.factor(prediccion),as.factor(test$datos3))
+
+
+# Naive Bayes
+train$datos1 <- as.factor(train$datos1)
+modelo<-naiveBayes(datos1~.,data=train)
+
+#Matriz de confusion
+testing <- test[,c("LotFrontage","LotArea","GrLivArea","YearBuilt","BsmtUnfSF","TotalBsmtSF","X1stFlrSF","GarageYrBlt","GarageArea","YearRemodAdd","SalePrice","datos1")]
+testing <- na.omit(testing)
+testing$datos1 <- as.factor(testing$datos1)
+
+predBayes<-predict(modelo, newdata = testing[,1:11])
+predBayes
+
+confusionMatrix(as.factor(testing$datos1),as.factor(predBayes))
+
+#Arbol de Decisi?n
+dt_model<-rpart(train$datos1~.,train,method = "class")
+rpart.plot(dt_model)
+
+prediccion <- predict(dt_model, newdata = test[1:11])
+
+columnaMasAlta<-apply(prediccion, 1, function(x) colnames(prediccion)[which.max(x)])
+test$prediccion<-columnaMasAlta
+
+cfm<-table(test$datos1,test$prediccion)
+cfm
+
+#Random Forest
+modeloRF1<-randomForest(train$datos1~.,train)
+prediccionRF1<-predict(modeloRF1,newdata = test)
+testCompleto<-test
+testCompleto$predRF<-prediccionRF1
+testCompleto$predRF<-testCompleto$predRF
+cfmRandomForest <- table(testCompleto$predRF, testCompleto$datos1)
+plot(cfmRandomForest);text(cfmRandomForest)
+
+cfmRandomForest <- confusionMatrix(table(testCompleto$predRF, testCompleto$datos1))
+cfmRandomForest
+
+#regresion lineal
+fitMLM_SalePrice<-lm(datos1~.,data = train[,c("GrLivArea","YearBuilt","BsmtUnfSF","TotalBsmtSF","GarageArea","YearRemodAdd", "datos1")])
+predMLM<-predict(fitMLM_SalePrice,newdata = test[,c("GrLivArea","YearBuilt","BsmtUnfSF","TotalBsmtSF","GarageArea","YearRemodAdd")])
+
+plot(test$datos1,col="blue")
+points(predMLM, col="red")
+
